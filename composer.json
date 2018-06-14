@@ -1,0 +1,61 @@
+{
+    "name": "shapecode/nya-doctrine-encrypt-bundle",
+    "type": "symfony-bundle",
+    "keywords": [
+        "doctrine",
+        "symfony",
+        "bundle",
+        "nya",
+        "not",
+        "yet",
+        "another",
+        "halite",
+        "defuse",
+        "encrypt",
+        "decrypt"
+    ],
+    "license": "MIT",
+    "description": "Not Yet Another Doctrine Encrypt Bundle -.- Encrypt symfony entity's by verified and standardized libraries.",
+    "homepage": "https://github.com/shapecode/nya-doctrine-encrypt-bundle",
+    "support": {
+        "email": "support@shapeocode.de",
+        "issues": "https://github.com/shapecode/nya-doctrine-encrypt-bundle/issues",
+        "source": "https://github.com/shapecode/nya-doctrine-encrypt-bundle/releases",
+        "wiki": "https://github.com/shapecode/nya-doctrine-encrypt-bundle/wiki"
+    },
+    "authors": [
+        {
+            "name": "Nikita Loges",
+            "homepage": "https://loges.software",
+            "email": "software@loges.software"
+        }
+    ],
+    "require": {
+        "php": "~5.6|~7.0",
+
+        "symfony/framework-bundle": "~2.8|~3.0|~4.0",
+        "symfony/dependency-injection": "~2.8|~3.0|~4.0",
+        "symfony/http-kernel": "~2.8|~3.0|~4.0",
+        "symfony/config": "~2.8|~3.0|~4.0",
+        "symfony/console": "~2.8|~3.0|~4.0",
+        "symfony/filesystem": "~2.8|~3.0|~4.0",
+        "symfony/property-access": "~2.8|~3.0|~4.0",
+
+        "doctrine/doctrine-bundle": "~1.9",
+        "doctrine/orm": "^2.5",
+        "doctrine/common": "~2.7",
+
+        "defuse/php-encryption": "~2.2"
+    },
+    "require-dev": {
+        "paragonie/halite": "^4.3"
+    },
+    "suggest": {
+        "paragonie/halite": "^4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shapecode\\NYADoctrineEncryptBundle\\": "src/"
+        }
+    }
+}

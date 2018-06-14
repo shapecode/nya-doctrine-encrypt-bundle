@@ -1,0 +1,59 @@
+services:
+    shapecode_doctrine_encrypt.orm_subscriber:
+        class: Shapecode\NYADoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
+        arguments:
+            - '@annotation_reader'
+            - "@shapecode_doctrine_encrypt.encryption"
+        tags:
+            -  { name: doctrine.event_subscriber }
+
+    shapecode_doctrine_encrypt.encryption:
+        class: Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager
+        public: true
+
+    shapecode_doctrine_encrypt.encryptor.defuse:
+        class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\DefuseEncryptor
+        public: false
+        arguments:
+          - "%shapecode_doctrine_encrypt.secret_key_path%"
+        tags:
+            - { name: doctrine.encryptor }
+
+    shapecode_doctrine_encrypt.encryptor.halite:
+        class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\HaliteEncryptor
+        public: false
+        arguments:
+          - "%shapecode_doctrine_encrypt.secret_key_path%"
+        tags:
+            - { name: doctrine.encryptor }
+
+    # commands
+    shapecode_doctrine_encrypt.command.status:
+        class: Shapecode\NYADoctrineEncryptBundle\Command\StatusCommand
+        public: false
+        arguments:
+            - '@doctrine'
+            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@annotation_reader'
+        tags:
+            - { name: console.command }
+
+    shapecode_doctrine_encrypt.command.encrypt:
+        class: Shapecode\NYADoctrineEncryptBundle\Command\EncryptCommand
+        public: false
+        arguments:
+            - '@doctrine'
+            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@annotation_reader'
+        tags:
+            - { name: console.command }
+
+    shapecode_doctrine_encrypt.command.decrypt:
+        class: Shapecode\NYADoctrineEncryptBundle\Command\DecryptCommand
+        public: false
+        arguments:
+            - '@doctrine'
+            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@annotation_reader'
+        tags:
+            - { name: console.command }
