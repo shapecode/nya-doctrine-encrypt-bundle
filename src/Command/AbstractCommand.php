@@ -4,7 +4,7 @@ namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Shapecode\NYADoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
+use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Command\Command;
 
 /**

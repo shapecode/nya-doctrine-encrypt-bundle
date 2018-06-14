@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class DefuseEncryptor implements EncryptorInterface
 {
+
     /** @var Filesystem */
     protected $fs;
 
@@ -64,5 +65,13 @@ class DefuseEncryptor implements EncryptorInterface
         }
 
         return $this->encryptionKey;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName()
+    {
+        return 'defuse';
     }
 }

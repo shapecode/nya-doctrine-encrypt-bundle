@@ -1,16 +1,19 @@
 services:
-    shapecode_doctrine_encrypt.orm_subscriber:
-        class: Shapecode\NYADoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
-        arguments:
-            - '@annotation_reader'
-            - "@shapecode_doctrine_encrypt.encryption"
-        tags:
-            -  { name: doctrine.event_subscriber }
 
-    shapecode_doctrine_encrypt.encryption:
+    shapecode_doctrine_encrypt.encryption.manager:
         class: Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager
         public: true
+        arguments:
+            - "%shapecode_doctrine_encrypt.encryptor%"
 
+    shapecode_doctrine_encrypt.encryption.handler:
+        class: Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandler
+        public: true
+        arguments:
+            - '@annotation_reader'
+            - "@shapecode_doctrine_encrypt.encryption.manager"
+
+    # encryptors
     shapecode_doctrine_encrypt.encryptor.defuse:
         class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\DefuseEncryptor
         public: false
@@ -27,13 +30,21 @@ services:
         tags:
             - { name: doctrine.encryptor }
 
+    # event listener
+    shapecode_doctrine_encrypt.orm_subscriber:
+        class: Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber
+        arguments:
+            - "@shapecode_doctrine_encrypt.encryption.handler"
+        tags:
+            -  { name: doctrine.event_subscriber }
+
     # commands
     shapecode_doctrine_encrypt.command.status:
         class: Shapecode\NYADoctrineEncryptBundle\Command\StatusCommand
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@shapecode_doctrine_encrypt.encryption.handler'
             - '@annotation_reader'
         tags:
             - { name: console.command }
@@ -43,7 +54,7 @@ services:
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@shapecode_doctrine_encrypt.encryption.handler'
             - '@annotation_reader'
         tags:
             - { name: console.command }
@@ -53,7 +64,7 @@ services:
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.subscriber'
+            - '@shapecode_doctrine_encrypt.encryption.handler'
             - '@annotation_reader'
         tags:
             - { name: console.command }

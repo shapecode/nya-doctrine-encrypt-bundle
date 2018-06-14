@@ -25,4 +25,9 @@ interface EncryptorInterface
      * @return string
      */
     public function decrypt($data);
+
+    /**
+     * @return string
+     */
+    public function getName();
 }

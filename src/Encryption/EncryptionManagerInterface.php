@@ -12,4 +12,19 @@ namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 interface EncryptionManagerInterface
 {
 
+    /**
+     * @param string      $data
+     * @param string|null $name
+     *
+     * @return string
+     */
+    public function encrypt($data, $name = null);
+
+    /**
+     * @param string      $data
+     * @param string|null $name
+     *
+     * @return string
+     */
+    public function decrypt($data, $name = null);
 }

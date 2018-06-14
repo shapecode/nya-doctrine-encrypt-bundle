@@ -68,4 +68,12 @@ class HaliteEncryptor implements EncryptorInterface
 
         return $this->encryptionKey;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName()
+    {
+        return 'halite';
+    }
 }
