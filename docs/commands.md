@@ -10,14 +10,19 @@ You can use the comment `doctrine:encrypt:status` to get the current database an
 $ php bin/console doctrine:encrypt:status
 ```
 
-This command will return the amount of entities and the amount of properties with the @Encrypted tag for each entity.
 The result will look like this:
 
 ```
-DoctrineEncrypt\Entity\User has 3 properties which are encrypted.
-DoctrineEncrypt\Entity\UserDetail has 13 properties which are encrypted.
+Show entities with ecrypted properies
+=====================================
+                                                                                                                        
+ Found 1 entities.                                                                                                      
 
-2 entities found which are containing 16 encrypted properties.
+ ----------------------- ---------------------------------------------------------------------------------
+  Class Name             Properties                                                                         
+ ----------------------- ---------------------------------------------------------------------------------
+  BankSepaMandate        accountNumber, bankCodeNumber, internationalBankAccountNumber, bankIdentifierCode  
+ ----------------------- ------------------------------------------------------------- ------------------- 
 ```
 
 ## 2) Encrypt current database
@@ -32,49 +37,12 @@ You can use the comment `doctrine:encrypt:database [encryptor]` to encrypt the c
 $ php bin/console doctrine:encrypt:database
 ```
 
-or you can provide an encryptor (optional).
-
-```
-$ php bin/console doctrine:encrypt:database defuse
-```
-
-```
-$ php bin/console doctrine:encrypt:database halite
-```
-
-This command will return the amount of values encrypted in the database.
-
-```
-Encryption finished values encrypted: 203 values.
-```
-
-
 ## 3) Decrypt current database
 
-You can use the comment `doctrine:decrypt:database [encryptor]` to decrypt the current database.
-
-* Optional parameter [encryptor]
-    * An encryptor provided by the bundle (Defuse or Halite) or your own [encryption class](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/custom_encryptor.md).
-    * Default: Your encryptor set in the configuration file or the default encryption class when not set in the configuration file
+You can use the comment `doctrine:decrypt:database` to decrypt the current database.
 
 ```
 $ php bin/console doctrine:decrypt:database
-```
-
-or you can provide an encryptor (optional).
-
-```
-$ php bin/console doctrine:decrypt:database defuse
-```
-
-```
-$ php bin/console doctrine:decrypt:database halite
-```
-
-This command will return the amount of entities and the amount of values decrypted in the database.
-
-```
-Decryption finished entities found: 26, decrypted 195 values.
 ```
 
 ## Custom encryption class
