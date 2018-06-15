@@ -61,7 +61,7 @@ class StatusCommand extends AbstractCommand
             ];
         }
 
-        $io->title('Show entities with ecrypted properies');
+        $io->title('Show entities with encrypted properies');
         $io->block(sprintf('Found %d entities.', count($rows)), null, 'fg=white;bg=blue', ' ', true);
         $io->table([
             'Class Name',

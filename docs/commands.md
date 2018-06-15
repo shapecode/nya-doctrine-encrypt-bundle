@@ -13,7 +13,7 @@ $ php bin/console doctrine:encrypt:status
 The result will look like this:
 
 ```
-Show entities with ecrypted properies
+Show entities with encrypted properies
 =====================================
                                                                                                                         
  Found 1 entities.                                                                                                      

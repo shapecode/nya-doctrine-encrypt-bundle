@@ -1,4 +1,4 @@
-# Shapecode - Not Yet Another Doctrine Ecrypt Bundle
+# Shapecode - Not Yet Another Doctrine Encrypt Bundle
 
 This is an fork from the original bundle created by michaeldegroot which can be found here:
 [michaeldegroot/DoctrineEncryptBundle](https://github.com/michaeldegroot/DoctrineEncryptBundle)

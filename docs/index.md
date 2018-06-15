@@ -1,4 +1,4 @@
-# Shapecode - Not Yet Another Doctrine Ecrypt Bundle
+# Shapecode - Not Yet Another Doctrine Encrypt Bundle
 
 This bundle is responsible for encryption/decryption of the data in your database.
 All encryption/decryption work on the server side.
