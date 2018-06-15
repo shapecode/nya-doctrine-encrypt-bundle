@@ -2,7 +2,7 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle;
 
-use Shapecode\NYADoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
+use Shapecode\NYADoctrineEncryptBundle\DependencyInjection\Compiler\EncryptorCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -23,6 +23,6 @@ class ShapecodeNYADoctrineEncryptBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new RegisterServiceCompilerPass());
+        $container->addCompilerPass(new EncryptorCompilerPass());
     }
 }

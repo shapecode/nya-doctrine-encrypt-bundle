@@ -23,6 +23,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /** @var EncryptionHandlerInterface */
     protected $handler;
 
+    /** @var bool */
+    protected $enable = true;
+
     /**
      * @param EncryptionHandlerInterface $handler
      */
@@ -46,10 +49,30 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     }
 
     /**
+     * @return bool
+     */
+    public function isEnable()
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function setEnable($enable)
+    {
+        $this->enable = (bool)$enable;
+    }
+
+    /**
      * @param LifecycleEventArgs $args
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
+        if ($this->isEnable() === false) {
+            return;
+        }
+
         $entity = $args->getEntity();
         $this->handler->processFields($entity, false);
     }
@@ -59,6 +82,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function preUpdate(PreUpdateEventArgs $args)
     {
+        if ($this->isEnable() === false) {
+            return;
+        }
+
         $entity = $args->getEntity();
         $this->handler->processFields($entity);
     }
@@ -68,6 +95,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function postLoad(LifecycleEventArgs $args)
     {
+        if ($this->isEnable() === false) {
+            return;
+        }
+
         $entity = $args->getEntity();
         $this->handler->processFields($entity, false);
     }
@@ -77,6 +108,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function preFlush(PreFlushEventArgs $preFlushEventArgs)
     {
+        if ($this->isEnable() === false) {
+            return;
+        }
+
         $unitOfWork = $preFlushEventArgs->getEntityManager()->getUnitOfWork();
 
         foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
@@ -89,6 +124,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function postFlush(PostFlushEventArgs $postFlushEventArgs)
     {
+        if ($this->isEnable() === false) {
+            return;
+        }
+
         $unitOfWork = $postFlushEventArgs->getEntityManager()->getUnitOfWork();
 
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {

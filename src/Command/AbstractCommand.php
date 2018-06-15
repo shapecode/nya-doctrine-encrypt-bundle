@@ -2,35 +2,57 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManagerInterface;
 use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Command\Command;
 
 /**
- * Base command containing usefull base methods.
+ * Class AbstractCommand
  *
- * @author Michael Feinbier <michael@feinbier.net>
- **/
+ * @package Shapecode\NYADoctrineEncryptBundle\Command
+ * @author  Nikita Loges
+ * @company tenolo GbR
+ */
 abstract class AbstractCommand extends Command
 {
     /** @var ManagerRegistry */
-    protected $entityManager;
+    protected $registry;
+
+    /** @var EncryptionHandlerInterface */
+    protected $encryptHandler;
+
+    /** @var EncryptionManagerInterface */
+    protected $encryptManager;
 
     /** @var DoctrineEncryptSubscriber */
     protected $subscriber;
 
-    /** @var AnnotationReader */
+    /** @var Reader */
     protected $annotationReader;
 
     /**
-     * @param ManagerRegistry           $registry
-     * @param DoctrineEncryptSubscriber $subscriber
-     * @param AnnotationReader          $annotationReader
+     * @param ManagerRegistry            $registry
+     * @param EncryptionHandlerInterface $encryptHandler
+     * @param EncryptionManagerInterface $encryptManager
+     * @param DoctrineEncryptSubscriber  $subscriber
+     * @param Reader                     $annotationReader
      */
-    public function __construct(ManagerRegistry $registry, DoctrineEncryptSubscriber $subscriber, AnnotationReader $annotationReader)
+    public function __construct(
+        ManagerRegistry $registry,
+        EncryptionHandlerInterface $encryptHandler,
+        EncryptionManagerInterface $encryptManager,
+        DoctrineEncryptSubscriber $subscriber,
+        Reader $annotationReader
+    )
     {
-        $this->entityManager = $registry;
+        $this->registry = $registry;
+        $this->encryptHandler = $encryptHandler;
+        $this->encryptManager = $encryptManager;
         $this->subscriber = $subscriber;
         $this->annotationReader = $annotationReader;
 
@@ -46,7 +68,7 @@ abstract class AbstractCommand extends Command
      */
     protected function getEntityIterator($entityName)
     {
-        $query = $this->entityManager->createQuery(sprintf('SELECT o FROM %s o', $entityName));
+        $query = $this->registry->getManager()->createQuery(sprintf('SELECT o FROM %s o', $entityName));
 
         return $query->iterate();
     }
@@ -60,21 +82,18 @@ abstract class AbstractCommand extends Command
      */
     protected function getTableCount($entityName)
     {
-        $query = $this->entityManager->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
+        $query = $this->registry->getManager()->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
 
         return (int)$query->getSingleScalarResult();
     }
 
     /**
-     * Return an array of entity-metadata for all entities
-     * that have at least one encrypted property.
-     *
-     * @return array
+     * @return ClassMetadata[]
      */
     protected function getEncryptionableEntityMetaData()
     {
         $validMetaData = [];
-        $metaDataArray = $this->entityManager->getMetadataFactory()->getAllMetadata();
+        $metaDataArray = $this->registry->getManager()->getMetadataFactory()->getAllMetadata();
 
         foreach ($metaDataArray as $entityMetaData) {
             if ($entityMetaData->isMappedSuperclass) {
@@ -82,7 +101,7 @@ abstract class AbstractCommand extends Command
             }
 
             $properties = $this->getEncryptionableProperties($entityMetaData);
-            if (count($properties) == 0) {
+            if (count($properties) === 0) {
                 continue;
             }
 
@@ -93,19 +112,19 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @param $entityMetaData
+     * @param ClassMetadata $entityMetaData
      *
-     * @return array
+     * @return array|\ReflectionProperty[]
      */
-    protected function getEncryptionableProperties($entityMetaData)
+    protected function getEncryptionableProperties(ClassMetadata $entityMetaData)
     {
         //Create reflectionClass for each meta data object
-        $reflectionClass = new \ReflectionClass($entityMetaData->name);
+        $reflectionClass = new \ReflectionClass($entityMetaData->getName());
         $propertyArray = $reflectionClass->getProperties();
         $properties = [];
 
         foreach ($propertyArray as $property) {
-            if ($this->annotationReader->getPropertyAnnotation($property, 'Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted')) {
+            if ($this->annotationReader->getPropertyAnnotation($property, Encrypted::class)) {
                 $properties[] = $property;
             }
         }

@@ -2,6 +2,8 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 
+use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
+
 /**
  * Interface EncryptionHandlerInterface
  *
@@ -12,6 +14,9 @@ namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 interface EncryptionHandlerInterface
 {
 
+    const ENCRYPTION_MARKER = '<ENC>';
+    const ENCRYPTED_ANN_NAME = Encrypted::class;
+
     /**
      * @param      $entity
      * @param bool $isEncryptOperation
@@ -19,4 +24,11 @@ interface EncryptionHandlerInterface
      * @return mixed
      */
     public function processFields($entity, $isEncryptOperation = true);
+
+    /**
+     * @param                     $entity
+     * @param \ReflectionProperty $refProperty
+     * @param bool                $isEncryptOperation
+     */
+    public function processField($entity, \ReflectionProperty $refProperty, $isEncryptOperation = true);
 }

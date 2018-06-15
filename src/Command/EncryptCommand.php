@@ -2,12 +2,12 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
-use Shapecode\NYADoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class EncryptCommand
@@ -23,11 +23,10 @@ class EncryptCommand extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-            ->setName('doctrine:encrypt:database')
-            ->setDescription('Encrypt whole database on tables which are not encrypted yet')
-            ->addArgument('encryptor', InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with')
-            ->addArgument('batchSize', InputArgument::OPTIONAL, 'The update/flush batch size', 20);
+        $this->setName('doctrine:encrypt:database');
+        $this->setDescription('Encrypt whole database on tables which are not encrypted yet');
+        $this->addArgument('encryptor', InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with');
+        $this->addOption('force', 'f', InputOption::VALUE_NONE);
     }
 
     /**
@@ -35,73 +34,67 @@ class EncryptCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Get entity manager, question helper, subscriber service and annotation reader
-        $question = $this->getHelper('question');
-        $batchSize = $input->getArgument('batchSize');
+        $force = $input->getOption('force');
 
-        // Get list of supported encryptors
-        $supportedExtensions = DoctrineEncryptExtension::SupportedEncryptorClasses;
-
-        // If encryptor has been set use that encryptor else use default
-        if ($input->getArgument('encryptor')) {
-            if (isset($supportedExtensions[$input->getArgument('encryptor')])) {
-                $reflection = new \ReflectionClass($supportedExtensions[$input->getArgument('encryptor')]);
-                $encryptor = $reflection->newInstance();
-                $this->subscriber->setEncryptor($encryptor);
-            } else {
-                if (class_exists($input->getArgument('encryptor'))) {
-                    $this->subscriber->setEncryptor($input->getArgument('encryptor'));
-                } else {
-                    $output->writeln('Given encryptor does not exists');
-
-                    return $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
-                }
-            }
-        }
+        $io = new SymfonyStyle($input, $output);
 
         // Get entity manager metadata
         $metaDataArray = $this->getEncryptionableEntityMetaData();
-        $confirmationQuestion = new ConfirmationQuestion(
-            '<question>' . count($metaDataArray) . ' entities found which are containing properties with the encryption tag.' . PHP_EOL . '' .
-            'Which are going to be encrypted with [' . get_class($this->subscriber->getEncryptor()) . ']. ' . PHP_EOL . '' .
-            'Wrong settings can mess up your data and it will be unrecoverable. ' . PHP_EOL . '' .
-            'I advise you to make <bg=yellow;options=bold>a backup</bg=yellow;options=bold>. ' . PHP_EOL . '' .
-            'Continue with this action? (y/yes)</question>', false
-        );
 
-        if (!$question->ask($input, $output, $confirmationQuestion)) {
-            return;
+        if (!$force) {
+            $io->note('Encrypting all fields can take up to several minutes depending on the database size.');
+            $io->note(count($metaDataArray) . ' entities found which are containing properties with the encryption tag. ' .
+                'Wrong settings can mess up your data and it will be unrecoverable. ' .
+                'I advise you to make a backup.');
+
+            $confirmationQuestion = new ConfirmationQuestion('Continue with this action?', false);
+
+            if (!$io->askQuestion($confirmationQuestion)) {
+                return;
+            }
         }
 
-        // Start decrypting database
-        $output->writeln('' . PHP_EOL . 'Encrypting all fields can take up to several minutes depending on the database size.');
+        $batchSize = 20;
+        $em = $this->registry->getManager();
+
+        $io->section('Encrypting');
+
+        $this->subscriber->setEnable(false);
 
         // Loop through entity manager meta data
         foreach ($metaDataArray as $metaData) {
             $i = 0;
-            $iterator = $this->getEntityIterator($metaData->name);
-            $totalCount = $this->getTableCount($metaData->name);
+            $entityName = $metaData->getName();
 
-            $output->writeln(sprintf('Processing <comment>%s</comment>', $metaData->name));
-            $progressBar = new ProgressBar($output, $totalCount);
+            $iterator = $this->getEntityIterator($entityName);
+            $totalCount = $this->getTableCount($entityName);
+
+            $io->text(sprintf('Processing %s', $entityName));
+            $progressBar = $io->createProgressBar($totalCount);
+
             foreach ($iterator as $row) {
-                $this->subscriber->processFields($row[0]);
+                $i++;
+
+                $this->encryptHandler->processFields($row[0]);
+                $progressBar->advance(1);
 
                 if (($i % $batchSize) === 0) {
-                    $this->entityManager->flush();
-                    $this->entityManager->clear();
-                    $progressBar->advance($batchSize);
+                    $em->flush();
+                    $em->clear();
                 }
-                $i++;
             }
 
             $progressBar->finish();
-            $output->writeln('');
-            $this->entityManager->flush();
+            $io->newLine(2);
+
+            $em->flush();
         }
 
-        // Say it is finished
-        $output->writeln('Encryption finished. Values encrypted: <info>' . $this->subscriber->encryptCounter . ' values</info>.' . PHP_EOL . 'All values are now encrypted.');
+        $this->subscriber->setEnable(true);
+
+        $io->section('Finished');
+        $io->text('Encryption finished.');
+        $io->text('All values are now encrypted');
     }
 
 }

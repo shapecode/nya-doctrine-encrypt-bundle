@@ -5,7 +5,6 @@ namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\Embedded;
-use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -17,9 +16,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class EncryptionHandler implements EncryptionHandlerInterface
 {
-
-    const ENCRYPTION_MARKER = '<ENC>';
-    const ENCRYPTED_ANN_NAME = Encrypted::class;
 
     /** @var EncryptionManagerInterface */
     protected $encryptor;
@@ -67,11 +63,9 @@ class EncryptionHandler implements EncryptionHandlerInterface
     }
 
     /**
-     * @param                     $entity
-     * @param \ReflectionProperty $refProperty
-     * @param bool                $isEncryptOperation
+     * @inheritdoc
      */
-    protected function processField($entity, \ReflectionProperty $refProperty, $isEncryptOperation = true)
+    public function processField($entity, \ReflectionProperty $refProperty, $isEncryptOperation = true)
     {
         $annotation = $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
         $propertyName = $refProperty->getName();
@@ -87,14 +81,22 @@ class EncryptionHandler implements EncryptionHandlerInterface
             return;
         }
 
-        if (substr($value, -strlen(self::ENCRYPTION_MARKER)) === self::ENCRYPTION_MARKER) {
-            return;
-        }
+        $length = strlen(self::ENCRYPTION_MARKER) * -1;
+        $substr = substr($value, $length);
 
         if ($isEncryptOperation) {
+            if ($substr === self::ENCRYPTION_MARKER) {
+                return;
+            }
+
             $value = $this->encryptor->encrypt($value) . self::ENCRYPTION_MARKER;
         } else {
-            $value = $this->encryptor->decrypt(substr($value, 0, -5));
+            if ($substr !== self::ENCRYPTION_MARKER) {
+                return;
+            }
+
+            $value = substr($value, 0, $length);
+            $value = $this->encryptor->decrypt($value);
         }
 
         $pac->setValue($entity, $propertyName, $value);

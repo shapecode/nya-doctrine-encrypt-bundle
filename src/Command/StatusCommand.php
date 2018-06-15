@@ -2,8 +2,11 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class StatusCommand
@@ -19,9 +22,8 @@ class StatusCommand extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-            ->setName('doctrine:encrypt:status')
-            ->setDescription('Get status of doctrine encrypt bundle and the database');
+        $this->setName('doctrine:encrypt:status');
+        $this->setDescription('Get status of doctrine encrypt bundle and the database');
     }
 
     /**
@@ -29,29 +31,41 @@ class StatusCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $metaDataArray = $this->entityManager->getMetadataFactory()->getAllMetadata();
+        $em = $this->registry->getManager();
 
-        $totalCount = 0;
+        /** @var ClassMetadata[] $metaDataArray */
+        $metaDataArray = $em->getMetadataFactory()->getAllMetadata();
+
+        $io = new SymfonyStyle($input, $output);
+
+        $rows = [];
         foreach ($metaDataArray as $metaData) {
             if ($metaData->isMappedSuperclass) {
                 continue;
             }
 
-            $count = 0;
-            $encryptedPropertiesCount = count($this->getEncryptionableProperties($metaData));
-            if ($encryptedPropertiesCount > 0) {
-                $totalCount += $encryptedPropertiesCount;
-                $count += $encryptedPropertiesCount;
+            $properties = $this->getEncryptionableProperties($metaData);
+
+            if (count($properties) === 0) {
+                continue;
             }
 
-            if ($count > 0) {
-                $output->writeln(sprintf('<info>%s</info> has <info>%d</info> properties which are encrypted.', $metaData->name, $count));
-            } else {
-                $output->writeln(sprintf('<info>%s</info> has no properties which are encrypted.', $metaData->name));
+            $props = [];
+            foreach ($properties as $p) {
+                $props[] = $p->getName();
             }
+
+            $rows[] = [
+                $metaData->getName(),
+                implode(', ', $props)
+            ];
         }
 
-        $output->writeln('');
-        $output->writeln(sprintf('<info>%d</info> entities found which are containing <info>%d</info> encrypted properties.', count($metaDataArray), $totalCount));
+        $io->title('Show entities with ecrypted properies');
+        $io->block(sprintf('Found %d entities.', count($rows)), null, 'fg=white;bg=blue', ' ', true);
+        $io->table([
+            'Class Name',
+            'Properties',
+        ], $rows);
     }
 }

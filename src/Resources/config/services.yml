@@ -13,6 +13,9 @@ services:
             - '@annotation_reader'
             - "@shapecode_doctrine_encrypt.encryption.manager"
 
+    doctrine.encryption:
+        alias: shapecode_doctrine_encrypt.encryption.handler
+
     # encryptors
     shapecode_doctrine_encrypt.encryptor.defuse:
         class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\DefuseEncryptor
@@ -31,8 +34,9 @@ services:
             - { name: doctrine.encryptor }
 
     # event listener
-    shapecode_doctrine_encrypt.orm_subscriber:
+    shapecode_doctrine_encrypt.event_listener.doctrine_encrypt:
         class: Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber
+        public: true
         arguments:
             - "@shapecode_doctrine_encrypt.encryption.handler"
         tags:
@@ -44,7 +48,9 @@ services:
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.encryption.handler'
+            - '@doctrine.encryption'
+            - '@shapecode_doctrine_encrypt.encryption.manager'
+            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
             - '@annotation_reader'
         tags:
             - { name: console.command }
@@ -54,7 +60,9 @@ services:
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.encryption.handler'
+            - '@doctrine.encryption'
+            - '@shapecode_doctrine_encrypt.encryption.manager'
+            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
             - '@annotation_reader'
         tags:
             - { name: console.command }
@@ -64,7 +72,9 @@ services:
         public: false
         arguments:
             - '@doctrine'
-            - '@shapecode_doctrine_encrypt.encryption.handler'
+            - '@doctrine.encryption'
+            - '@shapecode_doctrine_encrypt.encryption.manager'
+            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
             - '@annotation_reader'
         tags:
             - { name: console.command }
