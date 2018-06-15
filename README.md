@@ -1,4 +1,4 @@
-# shapecode/nya-doctrine-encrypt-bundle
+# Shapecode - Not Yet Another Doctrine Ecrypt Bundle
 
 This is an fork from the original bundle created by michaeldegroot which can be found here:
 [michaeldegroot/DoctrineEncryptBundle](https://github.com/michaeldegroot/DoctrineEncryptBundle)
@@ -27,9 +27,9 @@ shapecode_doctrine_encrypt:
 
 ### Documentation
 
-* [Installation](Resources/doc/installation.md)
-* [Requirements](Resources/doc/installation.md#requirements)
-* [Configuration](Resources/doc/configuration.md)
-* [Usage](Resources/doc/usage.md)
-* [Console commands](Resources/doc/commands.md)
-* [Custom encryption class](Resources/doc/custom_encryptor.md)
+* [Installation](docs/installation.md)
+* [Requirements](docs/installation.md#requirements)
+* [Configuration](docs/configuration.md)
+* [Usage](docs/usage.md)
+* [Console commands](docs/commands.md)
+* [Custom encryption class](docs/custom_encryptor.md)

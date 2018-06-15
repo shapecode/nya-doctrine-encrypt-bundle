@@ -4,7 +4,7 @@ There are only 2 paramaters in the configuration of the Doctrine encryption bund
 This parameters are also optional.
 
 * **encryptor** - Encryptor for encrypting data
-    * Encryptor, [your own encryptor class](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/Resources/doc/custom_encryptor.md) will override encryptor paramater
+    * Encryptor, [your own encryptor class](docs/custom_encryptor.md) will override encryptor paramater
     * Default: defuse
 
 ## yaml
@@ -26,4 +26,4 @@ composer require paragonie/halite ^4.3
 ## Usage
 
 Read how to use the database encryption bundle in your project.
-#### [Usage](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/Resources/doc/usage.md)
+#### [Usage](docs/usage.md)

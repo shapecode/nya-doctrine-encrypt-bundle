@@ -137,4 +137,4 @@ So our information is encrypted, and unless someone has your .DefuseEncryptor.ke
 
 You need `DoctrineFixturesBundle` and `defuse/php-encryption` extension for this example
 
-#### [Back to index](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/Resources/doc/index.md)
+#### [Back to index](docs/index.md)
