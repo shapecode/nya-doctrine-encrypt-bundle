@@ -38,4 +38,4 @@ public function registerBundles()
 All configuration value's are optional.
 On the following page you can find the configuration information.
 
-#### [Configuration](docs/configuration.md)
+#### [Configuration](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/configuration.md)

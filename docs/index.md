@@ -5,8 +5,8 @@ All encryption/decryption work on the server side.
 
 The following documents are available:
 
-* [Installation](docs/installation.md)
-* [Configuration](docs/configuration.md)
-* [Usage](docs/usage.md)
-* [Console commands](docs/commands.md)
-* [Custom encryptor class](docs/custom_encryptor.md)
+* [Installation](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/installation.md)
+* [Configuration](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/configuration.md)
+* [Usage](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/usage.md)
+* [Console commands](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/commands.md)
+* [Custom encryptor class](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/custom_encryptor.md)

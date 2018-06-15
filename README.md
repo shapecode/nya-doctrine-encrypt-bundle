@@ -27,9 +27,9 @@ shapecode_doctrine_encrypt:
 
 ### Documentation
 
-* [Installation](docs/installation.md)
-* [Requirements](docs/installation.md#requirements)
-* [Configuration](docs/configuration.md)
-* [Usage](docs/usage.md)
-* [Console commands](docs/commands.md)
-* [Custom encryption class](docs/custom_encryptor.md)
+* [Installation](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/installation.md)
+* [Requirements](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/installation.md#requirements)
+* [Configuration](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/configuration.md)
+* [Usage](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/usage.md)
+* [Console commands](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/commands.md)
+* [Custom encryption class](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/custom_encryptor.md)

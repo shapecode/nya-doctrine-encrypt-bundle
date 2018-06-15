@@ -2,4 +2,4 @@
 
 docs coming soon...
 
-#### [Back to index](docs/index.md)
+#### [Back to index](https://github.com/shapecode/nya-doctrine-encrypt-bundle/blob/master/docs/index.md)
