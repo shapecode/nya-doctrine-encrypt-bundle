@@ -10,7 +10,6 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class DefuseEncryptor implements EncryptorInterface
 {

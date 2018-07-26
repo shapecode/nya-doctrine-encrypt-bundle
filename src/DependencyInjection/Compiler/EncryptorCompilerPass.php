@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\DependencyInjection\Compiler
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class EncryptorCompilerPass implements CompilerPassInterface
 {

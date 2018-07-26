@@ -14,7 +14,6 @@ use ParagonIE\Halite\Symmetric\EncryptionKey;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class HaliteEncryptor implements EncryptorInterface
 {

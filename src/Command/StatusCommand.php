@@ -13,7 +13,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class StatusCommand extends AbstractCommand
 {

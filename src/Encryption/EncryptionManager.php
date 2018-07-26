@@ -9,7 +9,6 @@ use Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\EncryptorInterface;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class EncryptionManager implements EncryptionManagerInterface
 {

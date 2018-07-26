@@ -12,7 +12,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class EncryptionHandler implements EncryptionHandlerInterface
 {

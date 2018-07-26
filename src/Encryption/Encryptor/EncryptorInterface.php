@@ -7,7 +7,6 @@ namespace Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 interface EncryptorInterface
 {

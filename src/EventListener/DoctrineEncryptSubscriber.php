@@ -15,7 +15,6 @@ use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\EventListener
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class DoctrineEncryptSubscriber implements EventSubscriber
 {

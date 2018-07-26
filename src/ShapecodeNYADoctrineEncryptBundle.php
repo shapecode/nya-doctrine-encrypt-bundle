@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Shapecode\NYADoctrineEncryptBundle
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class ShapecodeNYADoctrineEncryptBundle extends Bundle
 {

@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\DependencyInjection
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class ShapecodeNYADoctrineEncryptExtension extends ConfigurableExtension
 {

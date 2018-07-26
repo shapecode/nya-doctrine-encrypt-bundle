@@ -11,7 +11,6 @@ namespace Shapecode\NYADoctrineEncryptBundle\Configuration;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Configuration
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class Encrypted
 {

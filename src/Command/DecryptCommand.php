@@ -14,7 +14,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 class DecryptCommand extends AbstractCommand
 {

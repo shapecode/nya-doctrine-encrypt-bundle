@@ -9,7 +9,6 @@ use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Encryption
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 interface EncryptionHandlerInterface
 {

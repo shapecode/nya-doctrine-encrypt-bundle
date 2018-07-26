@@ -16,7 +16,6 @@ use Symfony\Component\Console\Command\Command;
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
- * @company tenolo GbR
  */
 abstract class AbstractCommand extends Command
 {
