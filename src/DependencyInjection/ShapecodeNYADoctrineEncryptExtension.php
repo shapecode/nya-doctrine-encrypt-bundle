@@ -27,6 +27,6 @@ class ShapecodeNYADoctrineEncryptExtension extends ConfigurableExtension
 
         // Set parameters
         $container->setParameter('shapecode_doctrine_encrypt.encryptor', $mergedConfig['encryptor']);
-        $container->setParameter('shapecode_doctrine_encrypt.secret_key_path', $mergedConfig['secret_directory_path']);
+        $container->setParameter('shapecode_doctrine_encrypt.secret_directory', $mergedConfig['secret_directory']);
     }
 }

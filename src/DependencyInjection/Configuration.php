@@ -31,10 +31,10 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('encryptor')
-                    ->defaultValue('defuse')
+                    ->defaultValue('halite')
                     ->cannotBeEmpty()
                 ->end()
-                ->scalarNode('secret_directory_path')
+                ->scalarNode('secret_directory')
                     ->defaultValue('%kernel.project_dir%/var/shapecode/encrypt')
                 ->end()
             ->end();

@@ -8,6 +8,7 @@ use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class HaliteEncryptor
@@ -29,7 +30,14 @@ class HaliteEncryptor implements EncryptorInterface
      */
     public function __construct($keyFile)
     {
-        $this->keyFile = $keyFile;
+        $this->keyFile = $keyFile . '/halite.key';
+        $dir = dirname($this->keyFile);
+
+        $fs = new Filesystem();
+        if (!$fs->exists($dir)) {
+            $fs->mkdir($dir);
+        }
+
     }
 
     /**

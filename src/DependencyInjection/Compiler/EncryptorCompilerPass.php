@@ -2,6 +2,7 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\DependencyInjection\Compiler;
 
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -19,13 +20,11 @@ class EncryptorCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $definiton = $container->getDefinition('shapecode_doctrine_encrypt.encryption.manager');
+        $definiton = $container->findDefinition(EncryptionManager::class);
         $tags = $container->findTaggedServiceIds('doctrine.encryptor');
 
         foreach ($tags as $id => $configs) {
-            foreach ($configs as $config) {
-                $definiton->addMethodCall('addEncryptor', [new Reference($id)]);
-            }
+            $definiton->addMethodCall('addEncryptor', [new Reference($id)]);
         }
     }
 }

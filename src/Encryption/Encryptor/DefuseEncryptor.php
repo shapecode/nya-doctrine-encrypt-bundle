@@ -28,8 +28,13 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function __construct($keyFile)
     {
-        $this->keyFile = $keyFile;
-        $this->fs = new Filesystem();
+        $this->keyFile = $keyFile . '/defuse.key';
+        $dir = dirname($this->keyFile);
+
+        $fs = new Filesystem();
+        if (!$fs->exists($dir)) {
+            $fs->mkdir($dir);
+        }
     }
 
     /**

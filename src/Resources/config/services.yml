@@ -1,80 +1,35 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    shapecode_doctrine_encrypt.encryption.manager:
-        class: Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager
-        public: true
+    _instanceof:
+        Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\EncryptorInterface:
+            tags: ['doctrine.encryptor']
+
+    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManagerInterface: '@Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager'
+    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager:
         arguments:
-            - "%shapecode_doctrine_encrypt.encryptor%"
+            $default: "%shapecode_doctrine_encrypt.encryptor%"
 
-    shapecode_doctrine_encrypt.encryption.handler:
-        class: Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandler
-        public: true
-        arguments:
-            - '@annotation_reader'
-            - "@shapecode_doctrine_encrypt.encryption.manager"
-
-    doctrine.encryption:
-        alias: shapecode_doctrine_encrypt.encryption.handler
+    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandler: ~
+    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface: '@Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandler'
 
     # encryptors
-    shapecode_doctrine_encrypt.encryptor.defuse:
-        class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\DefuseEncryptor
-        public: false
+    Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\DefuseEncryptor:
         arguments:
-          - "%shapecode_doctrine_encrypt.secret_key_path%"
-        tags:
-            - { name: doctrine.encryptor }
+            $keyFile: "%shapecode_doctrine_encrypt.secret_directory%"
 
-    shapecode_doctrine_encrypt.encryptor.halite:
-        class: Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\HaliteEncryptor
-        public: false
+    Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\HaliteEncryptor:
         arguments:
-          - "%shapecode_doctrine_encrypt.secret_key_path%"
-        tags:
-            - { name: doctrine.encryptor }
+            $keyFile: "%shapecode_doctrine_encrypt.secret_directory%"
 
     # event listener
-    shapecode_doctrine_encrypt.event_listener.doctrine_encrypt:
-        class: Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber
-        public: true
-        arguments:
-            - "@shapecode_doctrine_encrypt.encryption.handler"
-        tags:
-            -  { name: doctrine.event_subscriber }
+    Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber:
+        tags: ['doctrine.event_subscriber']
 
     # commands
-    shapecode_doctrine_encrypt.command.status:
-        class: Shapecode\NYADoctrineEncryptBundle\Command\StatusCommand
-        public: false
-        arguments:
-            - '@doctrine'
-            - '@doctrine.encryption'
-            - '@shapecode_doctrine_encrypt.encryption.manager'
-            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
-            - '@annotation_reader'
-        tags:
-            - { name: console.command }
-
-    shapecode_doctrine_encrypt.command.encrypt:
-        class: Shapecode\NYADoctrineEncryptBundle\Command\EncryptCommand
-        public: false
-        arguments:
-            - '@doctrine'
-            - '@doctrine.encryption'
-            - '@shapecode_doctrine_encrypt.encryption.manager'
-            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
-            - '@annotation_reader'
-        tags:
-            - { name: console.command }
-
-    shapecode_doctrine_encrypt.command.decrypt:
-        class: Shapecode\NYADoctrineEncryptBundle\Command\DecryptCommand
-        public: false
-        arguments:
-            - '@doctrine'
-            - '@doctrine.encryption'
-            - '@shapecode_doctrine_encrypt.encryption.manager'
-            - '@shapecode_doctrine_encrypt.event_listener.doctrine_encrypt'
-            - '@annotation_reader'
-        tags:
-            - { name: console.command }
+    Shapecode\NYADoctrineEncryptBundle\Command\StatusCommand: ~
+    Shapecode\NYADoctrineEncryptBundle\Command\EncryptCommand: ~
+    Shapecode\NYADoctrineEncryptBundle\Command\DecryptCommand: ~
