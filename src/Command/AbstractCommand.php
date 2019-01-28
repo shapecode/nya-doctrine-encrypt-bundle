@@ -6,9 +6,6 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
-use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
-use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManagerInterface;
-use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -19,44 +16,12 @@ use Symfony\Component\Console\Command\Command;
  */
 abstract class AbstractCommand extends Command
 {
+
     /** @var ManagerRegistry */
     protected $registry;
 
-    /** @var EncryptionHandlerInterface */
-    protected $encryptHandler;
-
-    /** @var EncryptionManagerInterface */
-    protected $encryptManager;
-
-    /** @var DoctrineEncryptSubscriber */
-    protected $subscriber;
-
     /** @var Reader */
     protected $annotationReader;
-
-    /**
-     * @param ManagerRegistry            $registry
-     * @param EncryptionHandlerInterface $encryptHandler
-     * @param EncryptionManagerInterface $encryptManager
-     * @param DoctrineEncryptSubscriber  $subscriber
-     * @param Reader                     $annotationReader
-     */
-    public function __construct(
-        ManagerRegistry $registry,
-        EncryptionHandlerInterface $encryptHandler,
-        EncryptionManagerInterface $encryptManager,
-        DoctrineEncryptSubscriber $subscriber,
-        Reader $annotationReader
-    )
-    {
-        $this->registry = $registry;
-        $this->encryptHandler = $encryptHandler;
-        $this->encryptManager = $encryptManager;
-        $this->subscriber = $subscriber;
-        $this->annotationReader = $annotationReader;
-
-        parent::__construct();
-    }
 
     /**
      * Get an result iterator over the whole table of an entity.

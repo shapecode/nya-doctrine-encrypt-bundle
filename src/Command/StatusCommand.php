@@ -2,6 +2,8 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,6 +17,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class StatusCommand extends AbstractCommand
 {
+
+    /**
+     * @param ManagerRegistry $registry
+     * @param Reader          $reader
+     */
+    public function __construct(
+        ManagerRegistry $registry,
+        Reader $reader
+    )
+    {
+        $this->registry = $registry;
+        $this->annotationReader = $reader;
+
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */

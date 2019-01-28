@@ -2,6 +2,10 @@
 
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
+use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +21,34 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class EncryptCommand extends AbstractCommand
 {
+
+    /** @var EncryptionHandlerInterface */
+    protected $encryptHandler;
+
+    /** @var DoctrineEncryptSubscriber */
+    protected $subscriber;
+
+    /**
+     * @param ManagerRegistry            $registry
+     * @param Reader                     $reader
+     * @param EncryptionHandlerInterface $encryptHandler
+     * @param DoctrineEncryptSubscriber  $subscriber
+     */
+    public function __construct(
+        ManagerRegistry $registry,
+        Reader $reader,
+        EncryptionHandlerInterface $encryptHandler,
+        DoctrineEncryptSubscriber $subscriber
+    )
+    {
+        $this->registry = $registry;
+        $this->annotationReader = $reader;
+        $this->encryptHandler = $encryptHandler;
+        $this->subscriber = $subscriber;
+
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */

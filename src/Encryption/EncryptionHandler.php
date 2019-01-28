@@ -3,7 +3,7 @@
 namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\Mapping\Embedded;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -40,7 +40,7 @@ class EncryptionHandler implements EncryptionHandlerInterface
     {
         // Get the real class, we don't want to use the proxy classes
         if (false !== strpos(get_class($entity), 'Proxies')) {
-            $realClass = ClassUtils::getClass($entity);
+            $realClass = $this->getRealClass($entity);
         } else {
             $realClass = get_class($entity);
         }
@@ -146,5 +146,19 @@ class EncryptionHandler implements EncryptionHandlerInterface
         }
 
         return $propertiesArray;
+    }
+
+    /**
+     * @param $class
+     *
+     * @return bool|string
+     */
+    protected function getRealClass($class)
+    {
+        if (false === $pos = strrpos($class, '\\' . Proxy::MARKER . '\\')) {
+            return $class;
+        }
+
+        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
     }
 }
