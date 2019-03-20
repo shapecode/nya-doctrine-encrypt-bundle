@@ -28,9 +28,9 @@ class HaliteEncryptor implements EncryptorInterface
     /**
      * @inheritdoc
      */
-    public function __construct($keyFile)
+    public function __construct($keyDirectory)
     {
-        $this->keyFile = $keyFile . '/halite.key';
+        $this->keyFile = $keyDirectory . '/halite.key';
         $dir = dirname($this->keyFile);
 
         $fs = new Filesystem();
@@ -43,7 +43,7 @@ class HaliteEncryptor implements EncryptorInterface
     /**
      * @inheritdoc
      */
-    public function encrypt($data)
+    public function encrypt(string $data): string
     {
         return Crypto::encrypt(new HiddenString($data), $this->getKey());
     }
@@ -51,7 +51,7 @@ class HaliteEncryptor implements EncryptorInterface
     /**
      * @inheritdoc
      */
-    public function decrypt($data)
+    public function decrypt(string $data): string
     {
         return Crypto::decrypt($data, $this->getKey());
     }
@@ -79,7 +79,7 @@ class HaliteEncryptor implements EncryptorInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return 'halite';
     }

@@ -18,7 +18,7 @@ class EncryptorCompilerPass implements CompilerPassInterface
     /**
      * @inheritdoc
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $definiton = $container->findDefinition(EncryptionManager::class);
         $tags = $container->findTaggedServiceIds('doctrine.encryptor');

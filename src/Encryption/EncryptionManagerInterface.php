@@ -12,12 +12,9 @@ interface EncryptionManagerInterface
 {
 
     /**
-     * @param string      $data
-     * @param string|null $name
-     *
      * @return string
      */
-    public function encrypt($data, $name = null);
+    public function getDefaultName(): string;
 
     /**
      * @param string      $data
@@ -25,5 +22,13 @@ interface EncryptionManagerInterface
      *
      * @return string
      */
-    public function decrypt($data, $name = null);
+    public function encrypt(string $data, ?string $name = null): string;
+
+    /**
+     * @param string      $data
+     * @param string|null $name
+     *
+     * @return string
+     */
+    public function decrypt(string $data, ?string $name = null): string;
 }

@@ -5,6 +5,7 @@ namespace Shapecode\NYADoctrineEncryptBundle\Command;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
 use Symfony\Component\Console\Command\Command;
 
@@ -28,9 +29,9 @@ abstract class AbstractCommand extends Command
      *
      * @param string $entityName
      *
-     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     * @return IterableResult
      */
-    protected function getEntityIterator($entityName)
+    protected function getEntityIterator($entityName): IterableResult
     {
         $query = $this->registry->getManager()->createQuery(sprintf('SELECT o FROM %s o', $entityName));
 
@@ -44,7 +45,7 @@ abstract class AbstractCommand extends Command
      *
      * @return int
      */
-    protected function getTableCount($entityName)
+    protected function getTableCount($entityName): int
     {
         $query = $this->registry->getManager()->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
 
@@ -52,9 +53,10 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return ClassMetadata[]
+     * @return ClassMetadata[]|array
+     * @throws \ReflectionException
      */
-    protected function getEncryptionableEntityMetaData()
+    protected function getEncryptionableEntityMetaData(): array
     {
         $validMetaData = [];
         $metaDataArray = $this->registry->getManager()->getMetadataFactory()->getAllMetadata();
@@ -79,8 +81,9 @@ abstract class AbstractCommand extends Command
      * @param ClassMetadata $entityMetaData
      *
      * @return array|\ReflectionProperty[]
+     * @throws \ReflectionException
      */
-    protected function getEncryptionableProperties(ClassMetadata $entityMetaData)
+    protected function getEncryptionableProperties(ClassMetadata $entityMetaData): array
     {
         //Create reflectionClass for each meta data object
         $reflectionClass = new \ReflectionClass($entityMetaData->getName());

@@ -10,12 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class StatusCommand
+ * Class DatabaseStatusCommand
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
  */
-class StatusCommand extends AbstractCommand
+class DatabaseStatusCommand extends AbstractCommand
 {
 
     /**
@@ -36,9 +36,9 @@ class StatusCommand extends AbstractCommand
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this->setName('doctrine:encrypt:status');
+        $this->setName('encryption:doctrine:status');
         $this->setDescription('Get status of doctrine encrypt bundle and the database');
     }
 

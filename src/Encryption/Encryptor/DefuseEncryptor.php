@@ -26,21 +26,21 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * @inheritdoc
      */
-    public function __construct($keyFile)
+    public function __construct($keyDirectory)
     {
-        $this->keyFile = $keyFile . '/defuse.key';
+        $this->keyFile = $keyDirectory.'/defuse.key';
         $dir = dirname($this->keyFile);
 
-        $fs = new Filesystem();
-        if (!$fs->exists($dir)) {
-            $fs->mkdir($dir);
+        $this->fs = new Filesystem();
+        if (!$this->fs->exists($dir)) {
+            $this->fs->mkdir($dir);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function encrypt($data)
+    public function encrypt(string $data): string
     {
         return Crypto::encryptWithPassword($data, $this->getKey());
     }
@@ -48,7 +48,7 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * @inheritdoc
      */
-    public function decrypt($data)
+    public function decrypt(string $data): string
     {
         return Crypto::decryptWithPassword($data, $this->getKey());
     }
@@ -56,7 +56,7 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * @return string
      */
-    private function getKey()
+    protected function getKey(): string
     {
         if ($this->encryptionKey === null) {
             if ($this->fs->exists($this->keyFile)) {
@@ -74,7 +74,7 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return 'defuse';
     }

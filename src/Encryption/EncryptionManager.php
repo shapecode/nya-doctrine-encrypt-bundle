@@ -28,9 +28,17 @@ class EncryptionManager implements EncryptionManagerInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getDefaultName(): string
+    {
+        return $this->default;
+    }
+
+    /**
      * @param EncryptorInterface $encryptor
      */
-    public function addEncryptor(EncryptorInterface $encryptor)
+    public function addEncryptor(EncryptorInterface $encryptor): void
     {
         $this->encryptors[$encryptor->getName()] = $encryptor;
     }
@@ -40,10 +48,10 @@ class EncryptionManager implements EncryptionManagerInterface
      *
      * @return EncryptorInterface
      */
-    protected function getEncryptor($name = null)
+    protected function getEncryptor($name = null): EncryptorInterface
     {
         if ($name === null) {
-            $name = $this->default;
+            $name = $this->getDefaultName();
         }
 
         return $this->encryptors[$name];
@@ -52,7 +60,7 @@ class EncryptionManager implements EncryptionManagerInterface
     /**
      * @inheritDoc
      */
-    public function encrypt($data, $name = null)
+    public function encrypt(string $data, ?string $name = null): string
     {
         $encryptor = $this->getEncryptor($name);
 
@@ -62,7 +70,7 @@ class EncryptionManager implements EncryptionManagerInterface
     /**
      * @inheritDoc
      */
-    public function decrypt($data, $name = null)
+    public function decrypt(string $data, ?string $name = null): string
     {
         $encryptor = $this->getEncryptor($name);
 

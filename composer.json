@@ -16,7 +16,7 @@
         "decrypt"
     ],
     "license": "MIT",
-    "description": "Not Yet Another Doctrine Encrypt Bundle -.- Encrypt symfony entity's by verified and standardized libraries.",
+    "description": "Not Yet Another Doctrine Encryption Bundle -.- Encrypt symfony entity's by verified and standardized libraries.",
     "homepage": "https://github.com/shapecode/nya-doctrine-encrypt-bundle",
     "support": {
         "email": "support@shapeocode.de",

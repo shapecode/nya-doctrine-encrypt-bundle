@@ -8,7 +8,7 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryptionInterface;
 
 /**
  * Class DoctrineEncryptSubscriber
@@ -19,16 +19,16 @@ use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
 class DoctrineEncryptSubscriber implements EventSubscriber
 {
 
-    /** @var EncryptionHandlerInterface */
+    /** @var EntityEncryptionInterface */
     protected $handler;
 
     /** @var bool */
     protected $enable = true;
 
     /**
-     * @param EncryptionHandlerInterface $handler
+     * @param EntityEncryptionInterface $handler
      */
-    public function __construct(EncryptionHandlerInterface $handler)
+    public function __construct(EntityEncryptionInterface $handler)
     {
         $this->handler = $handler;
     }
@@ -36,7 +36,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @inheritdoc
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::postUpdate,
@@ -50,7 +50,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @return bool
      */
-    public function isEnable()
+    public function isEnable(): bool
     {
         return $this->enable;
     }
@@ -58,54 +58,54 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @param bool $enable
      */
-    public function setEnable($enable)
+    public function setEnable(bool $enable)
     {
-        $this->enable = (bool)$enable;
+        $this->enable = $enable;
     }
 
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         if ($this->isEnable() === false) {
             return;
         }
 
         $entity = $args->getEntity();
-        $this->handler->processFields($entity, false);
+        $this->handler->decrypt($entity);
     }
 
     /**
      * @param PreUpdateEventArgs $args
      */
-    public function preUpdate(PreUpdateEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         if ($this->isEnable() === false) {
             return;
         }
 
         $entity = $args->getEntity();
-        $this->handler->processFields($entity);
+        $this->handler->encrypt($entity);
     }
 
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         if ($this->isEnable() === false) {
             return;
         }
 
         $entity = $args->getEntity();
-        $this->handler->processFields($entity, false);
+        $this->handler->decrypt($entity);
     }
 
     /**
      * @param PreFlushEventArgs $preFlushEventArgs
      */
-    public function preFlush(PreFlushEventArgs $preFlushEventArgs)
+    public function preFlush(PreFlushEventArgs $preFlushEventArgs): void
     {
         if ($this->isEnable() === false) {
             return;
@@ -114,14 +114,14 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $unitOfWork = $preFlushEventArgs->getEntityManager()->getUnitOfWork();
 
         foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
-            $this->handler->processFields($entity);
+            $this->handler->encrypt($entity);
         }
     }
 
     /**
      * @param PostFlushEventArgs $postFlushEventArgs
      */
-    public function postFlush(PostFlushEventArgs $postFlushEventArgs)
+    public function postFlush(PostFlushEventArgs $postFlushEventArgs): void
     {
         if ($this->isEnable() === false) {
             return;
@@ -131,7 +131,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {
             foreach ($entityMap as $entity) {
-                $this->handler->processFields($entity, false);
+                $this->handler->decrypt($entity);
             }
         }
     }

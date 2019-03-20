@@ -16,17 +16,17 @@ interface EncryptorInterface
      *
      * @return string
      */
-    public function encrypt($data);
+    public function encrypt(string $data): string;
 
     /**
      * @param string $data
      *
      * @return string
      */
-    public function decrypt($data);
+    public function decrypt(string $data): string;
 
     /**
      * @return string
      */
-    public function getName();
+    public function getName(): string;
 }

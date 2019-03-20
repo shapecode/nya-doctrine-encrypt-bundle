@@ -4,7 +4,7 @@ namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryptionInterface;
 use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,33 +14,32 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
- * Class DecryptCommand
+ * Class DatabaseDecryptCommand
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
  */
-class DecryptCommand extends AbstractCommand
+class DatabaseDecryptCommand extends AbstractCommand
 {
 
-    /** @var EncryptionHandlerInterface */
+    /** @var EntityEncryptionInterface */
     protected $encryptHandler;
 
     /** @var DoctrineEncryptSubscriber */
     protected $subscriber;
 
     /**
-     * @param ManagerRegistry            $registry
-     * @param Reader                     $reader
-     * @param EncryptionHandlerInterface $encryptHandler
-     * @param DoctrineEncryptSubscriber  $subscriber
+     * @param ManagerRegistry           $registry
+     * @param Reader                    $reader
+     * @param EntityEncryptionInterface $encryptHandler
+     * @param DoctrineEncryptSubscriber $subscriber
      */
     public function __construct(
         ManagerRegistry $registry,
         Reader $reader,
-        EncryptionHandlerInterface $encryptHandler,
+        EntityEncryptionInterface $encryptHandler,
         DoctrineEncryptSubscriber $subscriber
-    )
-    {
+    ) {
         $this->registry = $registry;
         $this->annotationReader = $reader;
         $this->encryptHandler = $encryptHandler;
@@ -52,9 +51,9 @@ class DecryptCommand extends AbstractCommand
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this->setName('doctrine:decrypt:database');
+        $this->setName('encryption:doctrine:decrypt');
         $this->setDescription('Decrypt whole database on tables which are encrypted');
         $this->addOption('force', 'f', InputOption::VALUE_NONE);
     }
@@ -85,8 +84,8 @@ class DecryptCommand extends AbstractCommand
         if (!$force) {
             // Start decrypting database
             $io->note('Decrypting all fields. This can take up to several minutes depending on the database size.');
-            $io->note(count($metaDataArray) . ' entities found which are containing ' . $propertyCount . ' properties with the encryption tag. ' .
-                'Wrong settings can mess up your data and it will be unrecoverable. ' .
+            $io->note(count($metaDataArray).' entities found which are containing '.$propertyCount.' properties with the encryption tag. '.
+                'Wrong settings can mess up your data and it will be unrecoverable. '.
                 'I advise you to make a backup.');
 
             $confirmationQuestion = new ConfirmationQuestion('Continue with this action?', false);
@@ -128,7 +127,7 @@ class DecryptCommand extends AbstractCommand
                         $propertyName = $property->getName();
 
                         if ($pac->isReadable($entity, $propertyName) && $pac->isWritable($entity, $propertyName)) {
-                            $this->encryptHandler->processField($entity, $property, false);
+                            $this->encryptHandler->decrypt($entity, $property, false);
                             $valueCounter++;
                         }
 
@@ -158,7 +157,7 @@ class DecryptCommand extends AbstractCommand
         $this->subscriber->setEnable(true);
 
         $io->section('Finished');
-        $io->text('Decryption finished values found: <info>' . $valueCounter . '</info>');
+        $io->text('Decryption finished values found: <info>'.$valueCounter.'</info>');
         $io->text('All values are now decrypted.');
     }
 }

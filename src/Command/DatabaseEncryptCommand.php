@@ -4,7 +4,7 @@ namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionHandlerInterface;
+use Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryptionInterface;
 use Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,15 +14,15 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class EncryptCommand
+ * Class DatabaseEncryptCommand
  *
  * @package Shapecode\NYADoctrineEncryptBundle\Command
  * @author  Nikita Loges
  */
-class EncryptCommand extends AbstractCommand
+class DatabaseEncryptCommand extends AbstractCommand
 {
 
-    /** @var EncryptionHandlerInterface */
+    /** @var EntityEncryptionInterface */
     protected $encryptHandler;
 
     /** @var DoctrineEncryptSubscriber */
@@ -31,13 +31,13 @@ class EncryptCommand extends AbstractCommand
     /**
      * @param ManagerRegistry            $registry
      * @param Reader                     $reader
-     * @param EncryptionHandlerInterface $encryptHandler
+     * @param EntityEncryptionInterface $encryptHandler
      * @param DoctrineEncryptSubscriber  $subscriber
      */
     public function __construct(
         ManagerRegistry $registry,
         Reader $reader,
-        EncryptionHandlerInterface $encryptHandler,
+        EntityEncryptionInterface $encryptHandler,
         DoctrineEncryptSubscriber $subscriber
     )
     {
@@ -52,9 +52,9 @@ class EncryptCommand extends AbstractCommand
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this->setName('doctrine:encrypt:database');
+        $this->setName('encryption:doctrine:encrypt');
         $this->setDescription('Encrypt whole database on tables which are not encrypted yet');
         $this->addArgument('encryptor', InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with');
         $this->addOption('force', 'f', InputOption::VALUE_NONE);
@@ -106,7 +106,7 @@ class EncryptCommand extends AbstractCommand
             foreach ($iterator as $row) {
                 $i++;
 
-                $this->encryptHandler->processFields($row[0]);
+                $this->encryptHandler->encrypt($row[0]);
                 $progressBar->advance(1);
 
                 if (($i % $batchSize) === 0) {
