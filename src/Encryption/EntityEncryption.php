@@ -35,7 +35,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function encrypt(object $entity): void
+    public function encrypt($entity): void
     {
         $properties = $this->process($entity);
 
@@ -53,7 +53,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function decrypt(object $entity): void
+    public function decrypt($entity): void
     {
         $properties = $this->process($entity);
 
@@ -71,7 +71,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function encryptField(object $entity, \ReflectionProperty $refProperty): void
+    public function encryptField($entity, \ReflectionProperty $refProperty): void
     {
         $propertyName = $refProperty->getName();
 
@@ -94,7 +94,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function decryptField(object $entity, \ReflectionProperty $refProperty): void
+    public function decryptField($entity, \ReflectionProperty $refProperty): void
     {
         $propertyName = $refProperty->getName();
 
@@ -124,7 +124,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function encryptFieldEmbedded(object $entity, \ReflectionProperty $refProperty): void
+    public function encryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void
     {
         $embeddedEntity = $this->getValue($entity, $refProperty);
 
@@ -136,7 +136,7 @@ class EntityEncryption implements EntityEncryptionInterface
     /**
      * @inheritdoc
      */
-    public function decryptFieldEmbedded(object $entity, \ReflectionProperty $refProperty): void
+    public function decryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void
     {
         $embeddedEntity = $this->getValue($entity, $refProperty);
 
@@ -146,12 +146,12 @@ class EntityEncryption implements EntityEncryptionInterface
     }
 
     /**
-     * @param object $entity
+     * @param $entity
      *
      * @return \ReflectionProperty[]
      * @throws \ReflectionException
      */
-    protected function process(object $entity): array
+    protected function process($entity): array
     {
         // Get the real class, we don't want to use the proxy classes
         if (false !== strpos(get_class($entity), 'Proxies')) {
@@ -198,7 +198,7 @@ class EntityEncryption implements EntityEncryptionInterface
      *
      * @return mixed
      */
-    protected function getValue(object $entity, \ReflectionProperty $refProperty)
+    protected function getValue($entity, \ReflectionProperty $refProperty)
     {
         $propName = $refProperty->getName();
 

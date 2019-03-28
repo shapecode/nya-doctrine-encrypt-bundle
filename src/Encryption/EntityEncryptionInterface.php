@@ -17,36 +17,36 @@ interface EntityEncryptionInterface
     public const ENCRYPTED_ANN_NAME = Encrypted::class;
 
     /**
-     * @param object $entity
+     * @param $entity
      */
-    public function encrypt(object $entity): void;
+    public function encrypt($entity): void;
 
     /**
-     * @param object $entity
+     * @param $entity
      */
-    public function decrypt(object $entity): void;
-
-    /**
-     * @param object              $entity
-     * @param \ReflectionProperty $refProperty
-     */
-    public function encryptField(object $entity, \ReflectionProperty $refProperty): void;
+    public function decrypt($entity): void;
 
     /**
      * @param object              $entity
      * @param \ReflectionProperty $refProperty
      */
-    public function decryptField(object $entity, \ReflectionProperty $refProperty): void;
+    public function encryptField($entity, \ReflectionProperty $refProperty): void;
 
     /**
      * @param object              $entity
      * @param \ReflectionProperty $refProperty
      */
-    public function encryptFieldEmbedded(object $entity, \ReflectionProperty $refProperty): void;
+    public function decryptField($entity, \ReflectionProperty $refProperty): void;
 
     /**
      * @param object              $entity
      * @param \ReflectionProperty $refProperty
      */
-    public function decryptFieldEmbedded(object $entity, \ReflectionProperty $refProperty): void;
+    public function encryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void;
+
+    /**
+     * @param object              $entity
+     * @param \ReflectionProperty $refProperty
+     */
+    public function decryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void;
 }
