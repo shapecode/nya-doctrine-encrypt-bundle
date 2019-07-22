@@ -14,18 +14,20 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
 
+    public const ROOT_NODE = 'shapecode_nya_doctrine_encrypt';
+
     /**
      * @inheritdoc
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('shapecode_nya_doctrine_encrypt');
+        $treeBuilder = new TreeBuilder(self::ROOT_NODE);
 
         if (method_exists($treeBuilder, 'getRootNode')) {
             $rootNode = $treeBuilder->getRootNode();
         } else {
             // BC layer for symfony/config 4.1 and older
-            $rootNode = $treeBuilder->root('shapecode_nya_doctrine_encrypt');
+            $rootNode = $treeBuilder->root(self::ROOT_NODE);
         }
 
         $rootNode
