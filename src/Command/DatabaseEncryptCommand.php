@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\Reader;
@@ -12,47 +14,32 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function count;
+use function sprintf;
 
-/**
- * Class DatabaseEncryptCommand
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Command
- * @author  Nikita Loges
- */
-class DatabaseEncryptCommand extends AbstractCommand
+final class DatabaseEncryptCommand extends AbstractCommand
 {
-
     /** @var EntityEncryptionInterface */
     protected $encryptHandler;
 
     /** @var DoctrineEncryptSubscriber */
     protected $subscriber;
 
-    /**
-     * @param ManagerRegistry            $registry
-     * @param Reader                     $reader
-     * @param EntityEncryptionInterface $encryptHandler
-     * @param DoctrineEncryptSubscriber  $subscriber
-     */
     public function __construct(
         ManagerRegistry $registry,
         Reader $reader,
         EntityEncryptionInterface $encryptHandler,
         DoctrineEncryptSubscriber $subscriber
-    )
-    {
-        $this->registry = $registry;
+    ) {
+        $this->registry         = $registry;
         $this->annotationReader = $reader;
-        $this->encryptHandler = $encryptHandler;
-        $this->subscriber = $subscriber;
+        $this->encryptHandler   = $encryptHandler;
+        $this->subscriber       = $subscriber;
 
         parent::__construct();
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
+    protected function configure() : void
     {
         $this->setName('encryption:doctrine:encrypt');
         $this->setDescription('Encrypt whole database on tables which are not encrypted yet');
@@ -60,11 +47,9 @@ class DatabaseEncryptCommand extends AbstractCommand
         $this->addOption('force', 'f', InputOption::VALUE_NONE);
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
+        /** @var bool $force */
         $force = $input->getOption('force');
 
         $io = new SymfonyStyle($input, $output);
@@ -72,7 +57,7 @@ class DatabaseEncryptCommand extends AbstractCommand
         // Get entity manager metadata
         $metaDataArray = $this->getEncryptionableEntityMetaData();
 
-        if (!$force) {
+        if (! $force) {
             $io->note('Encrypting all fields can take up to several minutes depending on the database size.');
             $io->note(count($metaDataArray) . ' entities found which are containing properties with the encryption tag. ' .
                 'Wrong settings can mess up your data and it will be unrecoverable. ' .
@@ -80,13 +65,13 @@ class DatabaseEncryptCommand extends AbstractCommand
 
             $confirmationQuestion = new ConfirmationQuestion('Continue with this action?', false);
 
-            if (!$io->askQuestion($confirmationQuestion)) {
-                return;
+            if ($io->askQuestion($confirmationQuestion) === false) {
+                return 0;
             }
         }
 
         $batchSize = 20;
-        $em = $this->registry->getManager();
+        $em        = $this->registry->getManager();
 
         $io->section('Encrypting');
 
@@ -94,10 +79,10 @@ class DatabaseEncryptCommand extends AbstractCommand
 
         // Loop through entity manager meta data
         foreach ($metaDataArray as $metaData) {
-            $i = 0;
+            $i          = 0;
             $entityName = $metaData->getName();
 
-            $iterator = $this->getEntityIterator($entityName);
+            $iterator   = $this->getEntityIterator($entityName);
             $totalCount = $this->getTableCount($entityName);
 
             $io->text(sprintf('Processing %s', $entityName));
@@ -109,10 +94,12 @@ class DatabaseEncryptCommand extends AbstractCommand
                 $this->encryptHandler->encrypt($row[0]);
                 $progressBar->advance(1);
 
-                if (($i % $batchSize) === 0) {
-                    $em->flush();
-                    $em->clear();
+                if (($i % $batchSize) !== 0) {
+                    continue;
                 }
+
+                $em->flush();
+                $em->clear();
             }
 
             $progressBar->finish();
@@ -126,6 +113,7 @@ class DatabaseEncryptCommand extends AbstractCommand
         $io->section('Finished');
         $io->text('Encryption finished.');
         $io->text('All values are now encrypted');
-    }
 
+        return 0;
+    }
 }

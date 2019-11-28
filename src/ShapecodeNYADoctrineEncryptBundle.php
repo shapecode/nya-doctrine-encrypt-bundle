@@ -1,24 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle;
 
 use Shapecode\NYADoctrineEncryptBundle\DependencyInjection\Compiler\EncryptorCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- * Class ShapecodeNYADoctrineEncryptBundle
- *
- * @package Shapecode\NYADoctrineEncryptBundle
- * @author  Nikita Loges
- */
-class ShapecodeNYADoctrineEncryptBundle extends Bundle
+final class ShapecodeNYADoctrineEncryptBundle extends Bundle
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function build(ContainerBuilder $container): void
+    public function build(ContainerBuilder $container) : void
     {
         parent::build($container);
 

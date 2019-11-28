@@ -1,34 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 
-/**
- * Interface EncryptionManagerInterface
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Encryption
- * @author  Nikita Loges
- */
 interface EncryptionManagerInterface
 {
+    public function getDefaultName() : string;
 
-    /**
-     * @return string
-     */
-    public function getDefaultName(): string;
+    public function encrypt(string $data, ?string $name = null) : string;
 
-    /**
-     * @param string      $data
-     * @param string|null $name
-     *
-     * @return string
-     */
-    public function encrypt(string $data, ?string $name = null): string;
-
-    /**
-     * @param string      $data
-     * @param string|null $name
-     *
-     * @return string
-     */
-    public function decrypt(string $data, ?string $name = null): string;
+    public function decrypt(string $data, ?string $name = null) : string;
 }

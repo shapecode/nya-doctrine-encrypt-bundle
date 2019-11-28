@@ -1,67 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor;
 
 use ParagonIE\Halite\Alerts\CannotPerformOperation;
-use ParagonIE\Halite\Alerts\InvalidKey;
 use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
 use Symfony\Component\Filesystem\Filesystem;
+use function dirname;
 
-/**
- * Class HaliteEncryptor
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor
- * @author  Nikita Loges
- */
-class HaliteEncryptor implements EncryptorInterface
+final class HaliteEncryptor implements EncryptorInterface
 {
-
-    /** @var string */
+    /** @var EncryptionKey */
     protected $encryptionKey;
 
     /** @var string */
     protected $keyFile;
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct($keyDirectory)
+    public function __construct(string $keyDirectory)
     {
         $this->keyFile = $keyDirectory . '/halite.key';
-        $dir = dirname($this->keyFile);
+        $dir           = dirname($this->keyFile);
 
         $fs = new Filesystem();
-        if (!$fs->exists($dir)) {
-            $fs->mkdir($dir);
+        if ($fs->exists($dir)) {
+            return;
         }
 
+        $fs->mkdir($dir);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function encrypt(string $data): string
+    public function encrypt(string $data) : string
     {
         return Crypto::encrypt(new HiddenString($data), $this->getKey());
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function decrypt(string $data): string
+    public function decrypt(string $data) : string
     {
-        return Crypto::decrypt($data, $this->getKey());
+        return Crypto::decrypt($data, $this->getKey())->getString();
     }
 
-    /**
-     * @return EncryptionKey
-     * @throws CannotPerformOperation
-     * @throws InvalidKey
-     */
-    private function getKey()
+    private function getKey() : EncryptionKey
     {
         if ($this->encryptionKey === null) {
             try {
@@ -76,10 +58,7 @@ class HaliteEncryptor implements EncryptorInterface
         return $this->encryptionKey;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
+    public function getName() : string
     {
         return 'halite';
     }

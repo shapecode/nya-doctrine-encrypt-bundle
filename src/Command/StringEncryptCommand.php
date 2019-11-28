@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManagerInterface;
@@ -9,21 +11,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Class StringEncryptCommand
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Command
- * @author  Nikita Loges
- */
-class StringEncryptCommand extends Command
+final class StringEncryptCommand extends Command
 {
-
-    /** @var $encryptionManager */
+    /** @var EncryptionManagerInterface */
     protected $encryptionManager;
 
-    /**
-     * @param EncryptionManagerInterface $encryptionManager
-     */
     public function __construct(EncryptionManagerInterface $encryptionManager)
     {
         $this->encryptionManager = $encryptionManager;
@@ -31,10 +23,7 @@ class StringEncryptCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
+    protected function configure() : void
     {
         $this->setName('encryption:encrypt');
         $this->setDescription('Encrypt an argument');
@@ -42,12 +31,12 @@ class StringEncryptCommand extends Command
         $this->addArgument('encryptor', InputArgument::OPTIONAL);
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
+        /** @var string $text */
         $text = $input->getArgument('text');
+
+        /** @var string|null $encryptor */
         $encryptor = $input->getArgument('encryptor');
 
         $io = new SymfonyStyle($input, $output);
@@ -57,6 +46,7 @@ class StringEncryptCommand extends Command
         $secret = $this->encryptionManager->encrypt($text, $encryptor);
 
         $io->writeln($secret);
-    }
 
+        return 0;
+    }
 }

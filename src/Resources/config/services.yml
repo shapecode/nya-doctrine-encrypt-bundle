@@ -5,28 +5,20 @@ services:
         public: false
         bind:
             $keyDirectory: "%shapecode_doctrine_encrypt.secret_directory%"
+            $defaultEncryptor: "%shapecode_doctrine_encrypt.encryptor%"
 
     _instanceof:
         Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\EncryptorInterface:
             tags: ['doctrine.encryptor']
 
-    Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryption: ~
-    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager:
-        arguments:
-            $default: "%shapecode_doctrine_encrypt.encryptor%"
+    Shapecode\NYADoctrineEncryptBundle\Encryption\:
+        resource: '../../Encryption/Encryption/*'
 
-
-    Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManagerInterface: '@Shapecode\NYADoctrineEncryptBundle\Encryption\EncryptionManager'
-    Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryptionInterface: '@Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryption'
-
-    # encryptors
     Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\:
         resource: '../../Encryption/Encryptor/*'
 
-    # event listener
     Shapecode\NYADoctrineEncryptBundle\EventListener\DoctrineEncryptSubscriber:
         tags: ['doctrine.event_subscriber']
 
-    # commands
     Shapecode\NYADoctrineEncryptBundle\Command\:
         resource: '../../Command/*'

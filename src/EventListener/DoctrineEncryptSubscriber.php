@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
@@ -10,24 +12,14 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Shapecode\NYADoctrineEncryptBundle\Encryption\EntityEncryptionInterface;
 
-/**
- * Class DoctrineEncryptSubscriber
- *
- * @package Shapecode\NYADoctrineEncryptBundle\EventListener
- * @author  Nikita Loges
- */
-class DoctrineEncryptSubscriber implements EventSubscriber
+final class DoctrineEncryptSubscriber implements EventSubscriber
 {
-
     /** @var EntityEncryptionInterface */
     protected $handler;
 
     /** @var bool */
     protected $enable = true;
 
-    /**
-     * @param EntityEncryptionInterface $handler
-     */
     public function __construct(EntityEncryptionInterface $handler)
     {
         $this->handler = $handler;
@@ -36,7 +28,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @inheritdoc
      */
-    public function getSubscribedEvents(): array
+    public function getSubscribedEvents() : array
     {
         return [
             Events::postUpdate,
@@ -47,26 +39,17 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         ];
     }
 
-    /**
-     * @return bool
-     */
-    public function isEnable(): bool
+    public function isEnable() : bool
     {
         return $this->enable;
     }
 
-    /**
-     * @param bool $enable
-     */
-    public function setEnable(bool $enable)
+    public function setEnable(bool $enable) : void
     {
         $this->enable = $enable;
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(LifecycleEventArgs $args) : void
     {
         if ($this->isEnable() === false) {
             return;
@@ -76,10 +59,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $this->handler->decrypt($entity);
     }
 
-    /**
-     * @param PreUpdateEventArgs $args
-     */
-    public function preUpdate(PreUpdateEventArgs $args): void
+    public function preUpdate(PreUpdateEventArgs $args) : void
     {
         if ($this->isEnable() === false) {
             return;
@@ -89,10 +69,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $this->handler->encrypt($entity);
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postLoad(LifecycleEventArgs $args): void
+    public function postLoad(LifecycleEventArgs $args) : void
     {
         if ($this->isEnable() === false) {
             return;
@@ -102,10 +79,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $this->handler->decrypt($entity);
     }
 
-    /**
-     * @param PreFlushEventArgs $preFlushEventArgs
-     */
-    public function preFlush(PreFlushEventArgs $preFlushEventArgs): void
+    public function preFlush(PreFlushEventArgs $preFlushEventArgs) : void
     {
         if ($this->isEnable() === false) {
             return;
@@ -118,10 +92,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         }
     }
 
-    /**
-     * @param PostFlushEventArgs $postFlushEventArgs
-     */
-    public function postFlush(PostFlushEventArgs $postFlushEventArgs): void
+    public function postFlush(PostFlushEventArgs $postFlushEventArgs) : void
     {
         if ($this->isEnable() === false) {
             return;

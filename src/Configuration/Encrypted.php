@@ -1,18 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Configuration;
 
 /**
- * Class Encrypted
- *
- * The Encrypted class handles the @Encrypted annotation.
- *
  * @Annotation
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Configuration
- * @author  Nikita Loges
  */
-class Encrypted
+final class Encrypted
 {
     // Placeholder
 }

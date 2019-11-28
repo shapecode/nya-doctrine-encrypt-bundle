@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -7,22 +9,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-/**
- * Class ShapecodeNYADoctrineEncryptExtension
- *
- * @package Shapecode\NYADoctrineEncryptBundle\DependencyInjection
- * @author  Nikita Loges
- */
-class ShapecodeNYADoctrineEncryptExtension extends ConfigurableExtension
+final class ShapecodeNYADoctrineEncryptExtension extends ConfigurableExtension
 {
-
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
+    protected function loadInternal(array $mergedConfig, ContainerBuilder $container) : void
     {
         $locator = new FileLocator(__DIR__ . '/../Resources/config');
-        $loader = new Loader\YamlFileLoader($container, $locator);
+        $loader  = new Loader\YamlFileLoader($container, $locator);
         $loader->load('services.yml');
 
         // Set parameters

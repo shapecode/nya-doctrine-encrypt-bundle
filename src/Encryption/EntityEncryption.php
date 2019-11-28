@@ -1,41 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Encryption;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\Mapping\Embedded;
+use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use function array_merge;
+use function count;
+use function explode;
+use function get_class;
+use function is_object;
+use function strpos;
+use function strrpos;
+use function substr;
 
-/**
- * Class EncryptionHandler
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Encryption
- * @author  Nikita Loges
- */
 class EntityEncryption implements EntityEncryptionInterface
 {
-
     /** @var EncryptionManagerInterface */
     protected $encryptor;
 
     /** @var Reader */
     protected $annReader;
 
-    /**
-     * @param Reader                     $annReader
-     * @param EncryptionManagerInterface $encryptor
-     */
     public function __construct(Reader $annReader, EncryptionManagerInterface $encryptor)
     {
         $this->annReader = $annReader;
         $this->encryptor = $encryptor;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function encrypt($entity): void
+    public function encrypt(object $entity) : void
     {
         $properties = $this->process($entity);
 
@@ -50,10 +48,7 @@ class EntityEncryption implements EntityEncryptionInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function decrypt($entity): void
+    public function decrypt(object $entity) : void
     {
         $properties = $this->process($entity);
 
@@ -68,14 +63,11 @@ class EntityEncryption implements EntityEncryptionInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function encryptField($entity, \ReflectionProperty $refProperty): void
+    public function encryptField(object $entity, ReflectionProperty $refProperty) : void
     {
         $propertyName = $refProperty->getName();
 
-        $pac = PropertyAccess::createPropertyAccessor();
+        $pac   = PropertyAccess::createPropertyAccessor();
         $value = $pac->getValue($entity, $propertyName);
 
         $hasMarker = $this->hasMarker($value);
@@ -86,106 +78,92 @@ class EntityEncryption implements EntityEncryptionInterface
 
         $default = $this->encryptor->getDefaultName();
 
-        $value = $this->encryptor->encrypt($value, $default).self::ENCRYPTION_MARKER.$default;
+        $value = $this->encryptor->encrypt($value, $default) . self::ENCRYPTION_MARKER . $default;
 
         $pac->setValue($entity, $propertyName, $value);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function decryptField($entity, \ReflectionProperty $refProperty): void
+    public function decryptField(object $entity, ReflectionProperty $refProperty) : void
     {
         $propertyName = $refProperty->getName();
 
-        $pac = PropertyAccess::createPropertyAccessor();
+        $pac   = PropertyAccess::createPropertyAccessor();
         $value = $pac->getValue($entity, $propertyName);
 
         $hasMarker = $this->hasMarker($value);
 
-        if (!$hasMarker) {
+        if (! $hasMarker) {
             return;
         }
 
         $data = explode(self::ENCRYPTION_MARKER, $value);
 
-        $secret = $data[0];
-        $encryptor = null;
-
-        if (isset($data[1]) && !empty($data[1])) {
-            $encryptor = $data[1];
-        }
+        $secret    = $data[0];
+        $encryptor = $data[1] ?? null;
 
         $value = $this->encryptor->decrypt($secret, $encryptor);
 
         $pac->setValue($entity, $propertyName, $value);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function encryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void
+    public function encryptFieldEmbedded(object $entity, ReflectionProperty $refProperty) : void
     {
         $embeddedEntity = $this->getValue($entity, $refProperty);
 
-        if ($embeddedEntity) {
-            $this->encrypt($embeddedEntity);
+        if ($embeddedEntity === null) {
+            return;
         }
+
+        $this->encrypt($embeddedEntity);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function decryptFieldEmbedded($entity, \ReflectionProperty $refProperty): void
+    public function decryptFieldEmbedded(object $entity, ReflectionProperty $refProperty) : void
     {
         $embeddedEntity = $this->getValue($entity, $refProperty);
 
-        if ($embeddedEntity) {
-            $this->decrypt($embeddedEntity);
+        if ($embeddedEntity === null) {
+            return;
         }
+
+        $this->decrypt($embeddedEntity);
     }
 
     /**
-     * @param $entity
-     *
-     * @return \ReflectionProperty[]
-     * @throws \ReflectionException
+     * @return ReflectionProperty[]
      */
-    protected function process($entity): array
+    protected function process(object $entity) : array
     {
         // Get the real class, we don't want to use the proxy classes
-        if (false !== strpos(get_class($entity), 'Proxies')) {
+        if (strpos(get_class($entity), 'Proxies') !== false) {
             $realClass = $this->getRealClass($entity);
         } else {
             $realClass = get_class($entity);
         }
 
-        $marked = [];
+        $marked     = [];
         $properties = $this->getClassProperties($realClass);
 
         foreach ($properties as $property) {
             $annotation = $this->annReader->getPropertyAnnotation($property, self::ENCRYPTED_ANN_NAME);
 
-            if ($annotation !== null) {
-                $pac = PropertyAccess::createPropertyAccessor();
-                $value = $pac->getValue($entity, $property->getName());
-
-                if (!empty($value)) {
-                    $marked[] = $property;
-                }
+            if ($annotation === null) {
+                continue;
             }
+
+            $pac   = PropertyAccess::createPropertyAccessor();
+            $value = $pac->getValue($entity, $property->getName());
+
+            if ($value !== null) {
+                continue;
+            }
+
+            $marked[] = $property;
         }
 
         return $marked;
-
     }
 
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
-    protected function hasMarker(string $value): bool
+    protected function hasMarker(string $value) : bool
     {
         $substr = strpos($value, self::ENCRYPTION_MARKER);
 
@@ -193,12 +171,9 @@ class EntityEncryption implements EntityEncryptionInterface
     }
 
     /**
-     * @param object              $entity
-     * @param \ReflectionProperty $refProperty
-     *
      * @return mixed
      */
-    protected function getValue($entity, \ReflectionProperty $refProperty)
+    protected function getValue(object $entity, ReflectionProperty $refProperty)
     {
         $propName = $refProperty->getName();
 
@@ -208,23 +183,21 @@ class EntityEncryption implements EntityEncryptionInterface
     }
 
     /**
-     * @param $className
-     *
-     * @return \ReflectionProperty[]
-     * @throws \ReflectionException
+     * @return ReflectionProperty[]
      */
-    protected function getClassProperties($className): array
+    protected function getClassProperties(string $className) : array
     {
-        $reflectionClass = new \ReflectionClass($className);
-        $properties = $reflectionClass->getProperties();
+        $reflectionClass = new ReflectionClass($className);
+        $properties      = $reflectionClass->getProperties();
         $propertiesArray = [];
 
         foreach ($properties as $property) {
-            $propertyName = $property->getName();
+            $propertyName                   = $property->getName();
             $propertiesArray[$propertyName] = $property;
         }
 
-        if ($parentClass = $reflectionClass->getParentClass()) {
+        $parentClass = $reflectionClass->getParentClass();
+        if ($parentClass !== false) {
             $parentPropertiesArray = $this->getClassProperties($parentClass->getName());
             if (count($parentPropertiesArray) > 0) {
                 $propertiesArray = array_merge($parentPropertiesArray, $propertiesArray);
@@ -235,17 +208,16 @@ class EntityEncryption implements EntityEncryptionInterface
     }
 
     /**
-     * @param $class
-     *
-     * @return bool|string
+     * @param mixed $class
      */
-    protected function getRealClass($class)
+    protected function getRealClass($class) : string
     {
         if (is_object($class)) {
             $class = get_class($class);
         }
 
-        if (false === $pos = strrpos($class, '\\'.Proxy::MARKER.'\\')) {
+        $pos = strrpos($class, '\\' . Proxy::MARKER . '\\');
+        if ($pos === false) {
             return $class;
         }
 

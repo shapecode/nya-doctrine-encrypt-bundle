@@ -1,64 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use ReflectionClass;
+use ReflectionProperty;
 use Shapecode\NYADoctrineEncryptBundle\Configuration\Encrypted;
 use Symfony\Component\Console\Command\Command;
+use function count;
+use function sprintf;
 
-/**
- * Class AbstractCommand
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Command
- * @author  Nikita Loges
- */
 abstract class AbstractCommand extends Command
 {
-
     /** @var ManagerRegistry */
     protected $registry;
 
     /** @var Reader */
     protected $annotationReader;
 
-    /**
-     * Get an result iterator over the whole table of an entity.
-     *
-     * @param string $entityName
-     *
-     * @return IterableResult
-     */
-    protected function getEntityIterator($entityName): IterableResult
+    protected function getEntityIterator(string $entityName) : IterableResult
     {
-        $query = $this->registry->getManager()->createQuery(sprintf('SELECT o FROM %s o', $entityName));
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->registry->getManager();
+
+        $query = $manager->createQuery(sprintf('SELECT o FROM %s o', $entityName));
 
         return $query->iterate();
     }
 
-    /**
-     * Get the number of rows in an entity-table
-     *
-     * @param string $entityName
-     *
-     * @return int
-     */
-    protected function getTableCount($entityName): int
+    protected function getTableCount(string $entityName) : int
     {
-        $query = $this->registry->getManager()->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->registry->getManager();
 
-        return (int)$query->getSingleScalarResult();
+        $query = $manager->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
+
+        return (int) $query->getSingleScalarResult();
     }
 
     /**
-     * @return ClassMetadata[]|array
-     * @throws \ReflectionException
+     * @return ClassMetadataInfo[]|array
      */
-    protected function getEncryptionableEntityMetaData(): array
+    protected function getEncryptionableEntityMetaData() : array
     {
         $validMetaData = [];
+
+        /** @var ClassMetadataInfo[] $metaDataArray */
         $metaDataArray = $this->registry->getManager()->getMetadataFactory()->getAllMetadata();
 
         foreach ($metaDataArray as $entityMetaData) {
@@ -78,22 +72,21 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @param ClassMetadata $entityMetaData
-     *
-     * @return array|\ReflectionProperty[]
-     * @throws \ReflectionException
+     * @return array|ReflectionProperty[]
      */
-    protected function getEncryptionableProperties(ClassMetadata $entityMetaData): array
+    protected function getEncryptionableProperties(ClassMetadata $entityMetaData) : array
     {
         //Create reflectionClass for each meta data object
-        $reflectionClass = new \ReflectionClass($entityMetaData->getName());
-        $propertyArray = $reflectionClass->getProperties();
-        $properties = [];
+        $reflectionClass = new ReflectionClass($entityMetaData->getName());
+        $propertyArray   = $reflectionClass->getProperties();
+        $properties      = [];
 
         foreach ($propertyArray as $property) {
-            if ($this->annotationReader->getPropertyAnnotation($property, Encrypted::class)) {
-                $properties[] = $property;
+            if ($this->annotationReader->getPropertyAnnotation($property, Encrypted::class) !== null) {
+                continue;
             }
+
+            $properties[] = $property;
         }
 
         return $properties;

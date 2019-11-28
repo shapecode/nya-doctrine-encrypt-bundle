@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\NYADoctrineEncryptBundle\Command;
 
 use Doctrine\Common\Annotations\Reader;
@@ -8,44 +10,29 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function count;
+use function implode;
+use function sprintf;
 
-/**
- * Class DatabaseStatusCommand
- *
- * @package Shapecode\NYADoctrineEncryptBundle\Command
- * @author  Nikita Loges
- */
-class DatabaseStatusCommand extends AbstractCommand
+final class DatabaseStatusCommand extends AbstractCommand
 {
-
-    /**
-     * @param ManagerRegistry $registry
-     * @param Reader          $reader
-     */
     public function __construct(
         ManagerRegistry $registry,
         Reader $reader
-    )
-    {
-        $this->registry = $registry;
+    ) {
+        $this->registry         = $registry;
         $this->annotationReader = $reader;
 
         parent::__construct();
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
+    protected function configure() : void
     {
         $this->setName('encryption:doctrine:status');
         $this->setDescription('Get status of doctrine encrypt bundle and the database');
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $em = $this->registry->getManager();
 
@@ -73,7 +60,7 @@ class DatabaseStatusCommand extends AbstractCommand
 
             $rows[] = [
                 $metaData->getName(),
-                implode(', ', $props)
+                implode(', ', $props),
             ];
         }
 
@@ -83,5 +70,7 @@ class DatabaseStatusCommand extends AbstractCommand
             'Class Name',
             'Properties',
         ], $rows);
+
+        return 0;
     }
 }
