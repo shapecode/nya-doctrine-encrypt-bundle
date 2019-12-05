@@ -12,7 +12,7 @@ services:
             tags: ['doctrine.encryptor']
 
     Shapecode\NYADoctrineEncryptBundle\Encryption\:
-        resource: '../../Encryption/Encryption/*'
+        resource: '../../Encryption/*'
 
     Shapecode\NYADoctrineEncryptBundle\Encryption\Encryptor\:
         resource: '../../Encryption/Encryptor/*'
