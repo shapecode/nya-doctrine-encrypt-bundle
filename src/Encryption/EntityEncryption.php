@@ -70,7 +70,7 @@ class EntityEncryption implements EntityEncryptionInterface
         $pac   = PropertyAccess::createPropertyAccessor();
         $value = $pac->getValue($entity, $propertyName);
 
-        $hasMarker = $this->hasMarker($value);
+        $hasMarker = ($value !== null) && $this->hasMarker($value);
 
         if ($hasMarker) {
             return;
@@ -90,7 +90,7 @@ class EntityEncryption implements EntityEncryptionInterface
         $pac   = PropertyAccess::createPropertyAccessor();
         $value = $pac->getValue($entity, $propertyName);
 
-        $hasMarker = $this->hasMarker($value);
+        $hasMarker = ($value !== null) && $this->hasMarker($value);
 
         if (! $hasMarker) {
             return;
