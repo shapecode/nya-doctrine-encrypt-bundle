@@ -163,9 +163,13 @@ class EntityEncryption implements EntityEncryptionInterface
         return $marked;
     }
 
-    protected function hasMarker(string $value) : bool
+    protected function hasMarker(?string $value) : bool
     {
-        $substr = strpos($value, self::ENCRYPTION_MARKER);
+        $substr = false;
+
+        if ($value !== null) {
+            $substr = strpos($value, self::ENCRYPTION_MARKER);
+        }
 
         return $substr !== false;
     }
